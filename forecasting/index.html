@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPG demand planning with AI: forecasting, promotion response and accuracy</title>
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48 64x64 128x128 256x256">
+<meta name="description" content="How CPG teams forecast demand with AI, the model families behind it, where internal sales history runs out and how a forecast gets judged." />
+<link rel="canonical" href="https://aiforcpg.org/forecasting/" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CPG demand planning with AI: forecasting, promotion response and accuracy" />
+<meta property="og:url" content="https://aiforcpg.org/forecasting/" />
+<meta property="og:site_name" content="AI for CPG" />
+<style>
+  :root {
+    --deep: #123047;
+    --deep-ink: #0B1F2E;
+    --citrus: #C8E86B;
+    --citrus-mid: #9FD34A;
+    --sand: #F6F3EA;
+    --clay: #E2714A;
+    --clay-deep: #B4451F;
+    --mist: #DCE9E5;
+    --white: #FFFFFF;
+    --rule: rgba(18,48,71,0.18);
+    --rule-light: rgba(255,255,255,0.22);
+    --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 48px;
+    --s6: 64px; --s7: 96px; --s8: 128px;
+    --r-sm: 0px; --r-md: 4px;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, sans-serif;
+    --t-display: 48px; --t-h2: 44px; --t-h3: 22px;
+    --t-body: 17px; --t-small: 12px;
+    --wide: 1200px; --prose: 680px;
+    --sec-pad: var(--s7);
+  }
+  body { margin: 0; background: var(--sand); color: var(--deep-ink); font: 400 var(--t-body)/1.6 var(--font); -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+  a { color: var(--clay-deep); text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--deep); }
+  h1, h2, h3, p, ul, ol { margin: 0; }
+  em { font-style: italic; }
+  [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity 500ms ease, transform 500ms ease; }
+  [data-reveal][data-shown="1"] { opacity: 1; transform: none; }
+  [data-grid="cols3"] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); align-items: start; }
+  [data-block] { border-top: 1px solid var(--rule); padding: var(--s4) 0; display: flex; flex-direction: column; gap: var(--s2); }
+  [data-callout] { background: var(--white); border-left: 6px solid var(--citrus-mid); padding: var(--s4) var(--s3); }
+  [data-grid="rel3"] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  [data-grid="foot"] { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: var(--s5); align-items: end; }
+  [data-grid="footlinks"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
+  [data-cta-row] { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+  [data-btn] { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 264px; box-sizing: border-box; font: 600 15px/1.2 var(--font); padding: 14px 20px; text-decoration: none; border-radius: var(--r-md); white-space: nowrap; transition: background 160ms ease; }
+  [data-btn] [data-chev-r] { display: inline-block; transition: transform 160ms ease; font-size: 11px; }
+  [data-btn]:hover [data-chev-r] { transform: translateX(3px); }
+  [data-btn="citrus"] { background: var(--citrus); color: var(--deep); }
+  [data-btn="citrus"]:hover { background: #D7F08C; color: var(--deep); }
+  [data-btn="deep"] { background: var(--deep); color: var(--white); }
+  [data-btn="deep"]:hover { background: var(--deep-ink); color: var(--white); }
+  [data-btn]:focus-visible { outline: 2px solid var(--deep); outline-offset: 2px; }
+  @media (max-width: 1080px) {
+    :root { --t-display: 40px; --t-h2: 34px; }
+    [data-grid="foot"] { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  }
+  @media (max-width: 720px) {
+    :root { --t-display: 32px; --t-h2: 28px; --sec-pad: var(--s6); }
+    [data-grid="cols3"], [data-grid="rel3"], [data-grid="footlinks"] { grid-template-columns: minmax(0, 1fr); }
+    [data-btn] { width: 100%; }
+    [data-cta-row] { flex-direction: column; align-items: flex-start; gap: var(--s3); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+    [data-reveal] { opacity: 1 !important; transform: none !important; }
+  }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"CPG demand planning with AI: forecasting, promotion response and accuracy","url":"https://aiforcpg.org/forecasting/","isPartOf":{"@type":"WebPage","url":"https://aiforcpg.org/"},"publisher":{"@type":"Organization","name":"Tastewise","url":"https://tastewise.io/"},"citation":[{"@type":"CreativeWork","name":"AI in CPG and Retail","author":{"@type":"Organization","name":"Boston Consulting Group and the Consumer Goods Forum"},"datePublished":"2026-06-24"},{"@type":"CreativeWork","name":"State of AI in retail and CPG","author":{"@type":"Organization","name":"Deloitte"},"datePublished":"2026-06-18"},{"@type":"CreativeWork","name":"What AI Means for Consumer Products Companies' Margins","author":{"@type":"Organization","name":"Bain & Company"},"datePublished":"2025-10-17"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is AI demand forecasting in CPG?","acceptedAnswer":{"@type":"Answer","text":"It is the use of statistical and machine learning models to predict what will sell, by product and location, over a planning horizon. The output feeds inventory allocation, production planning and promotion response. BCG found frontrunners concentrating on demand forecasting, pricing and transport optimization in 2026, where the value case is clearest."}},{"@type":"Question","name":"How accurate is AI demand forecasting in CPG?","acceptedAnswer":{"@type":"Answer","text":"Accuracy depends on the horizon and the level. A weekly forecast for an established product at national level is far easier than a launch forecast for one store cluster. Any accuracy claim without a stated horizon, level and baseline says nothing, so ask a vendor for all three."}},{"@type":"Question","name":"What data does CPG demand planning need?","acceptedAnswer":{"@type":"Answer","text":"Internal shipment and sales history is the base, joined to promotion calendars, pricing and distribution. Calendar and weather effects improve seasonal reads. Products with no history, new markets and category shifts need external demand signal, because internal history cannot describe a need the company has not sold against yet."}},{"@type":"Question","name":"How does AI forecast promotion response?","acceptedAnswer":{"@type":"Answer","text":"A promotion response model separates the lift caused by a mechanic from the demand that would have arrived anyway. It reads past promotions by retailer, region and mechanic, then estimates incremental volume for a planned one. That estimate is what turns promo ROI into a number a revenue growth team can defend."}},{"@type":"Question","name":"Why do CPG forecasts miss on new products?","acceptedAnswer":{"@type":"Answer","text":"A new product has no history, so a model trained on history has nothing to learn from. Teams substitute an analogue product, which works when the analogue is close and fails when the launch rides a need that is moving. External demand signal is what sizes the need before the first shipment."}}]}</script>
+</head>
+<body>
+
+<div style="background: var(--sand); overflow-x: hidden">
+
+  <nav id="site-menu" hidden style="position: fixed; inset: 0; z-index: 50; background: var(--deep); overflow-y: auto">
+    <div style="max-width: var(--wide); margin: 0 auto; padding: var(--s5) var(--s3); display: flex; flex-direction: column; gap: var(--s3)">
+      <button type="button" data-menu-toggle aria-label="Close navigation" style="align-self: flex-end; background: none; border: 1px solid var(--rule-light); color: var(--white); width: 44px; height: 44px; font: 400 20px/1 var(--font); cursor: pointer">&#215;</button>
+      <a href="#models" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">Model families</a>
+      <a href="#gaps" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">Where history runs out</a>
+      <a href="#judged" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">How it is judged</a>
+      <a href="#faq" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">FAQ</a>
+    </div>
+  </nav>
+
+  <header id="top" style="background: var(--sand); border-bottom: 1px solid var(--rule)">
+    <div style="max-width: var(--wide); margin: 0 auto; padding: var(--s3); display: flex; align-items: center; justify-content: space-between; gap: var(--s3)">
+      <a href="/" style="text-decoration: none; flex: 0 0 auto">
+        <span style="display: block; font: 700 20px/1.1 var(--font); color: var(--deep); letter-spacing: -0.5px; white-space: nowrap">AI for CPG</span>
+        <span style="display: flex; align-items: center; gap: 6px; margin-top: 3px">
+          <span style="font: 500 11px/1.3 var(--font); color: var(--clay-deep); letter-spacing: 0.06em">by</span>
+          <img src="/assets/tastewise-logo.webp" alt="Tastewise" width="400" height="86" style="display: block; height: 13px; width: auto; filter: brightness(0)" />
+        </span>
+      </a>
+      <div style="display: flex; align-items: center; gap: var(--s2)">
+        <a href="#data-source" style="background: var(--citrus); color: var(--deep); font: 600 15px/1 var(--font); padding: 12px 22px; border-radius: 999px; text-decoration: none; white-space: nowrap">Talk to us</a>
+        <button type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open navigation" style="width: 44px; height: 44px; background: none; border: 1px solid var(--rule); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px">
+          <span style="display: block; width: 18px; height: 1.5px; background: var(--deep)"></span>
+          <span style="display: block; width: 18px; height: 1.5px; background: var(--deep)"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section style="background: var(--sand); padding: var(--s7) var(--s3) var(--s6)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <span style="display: inline-block; font: 600 11px/1.4 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--clay-deep)">Forecasting</span>
+        <h1 style="margin-top: var(--s3); max-width: 820px; font: 700 var(--t-display)/1.05 var(--font); letter-spacing: -1.6px; color: var(--deep)">CPG demand planning <em>with AI</em></h1>
+        <p style="max-width: 520px; margin-top: var(--s3); font: 400 19px/1.55 var(--font); color: var(--deep-ink)">The most mature AI application in consumer goods, what the models actually do, and the point where internal sales history stops answering the question.</p>
+        <div data-callout style="max-width: var(--prose); margin-top: var(--s5)">
+          <p style="font: 400 20px/1.45 var(--font); color: var(--deep-ink); letter-spacing: -0.2px">CPG demand planning with AI uses statistical and machine learning models to predict what will sell, by product and location, then allocates inventory and sets promotion response against that prediction. It is the oldest AI application in the sector and the one with the cleanest internal data behind it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="what-it-covers" style="background: var(--sand); padding: var(--sec-pad) var(--s3); border-top: 1px solid var(--rule)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">What CPG demand planning <em>covers</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <p>Demand planning runs from a forecast to a set of commitments. The forecast estimates volume by product and location over a horizon. Inventory allocation decides where that volume sits. Production planning turns it into a schedule, and promotion planning decides which mechanics run where.</p>
+          <p>Each of those decisions has a different tolerance for error. A national quarterly number can be wrong by a few points without consequence. A store-cluster weekly number that is wrong the same way puts product in the wrong place, and the cost arrives as markdown or as a gap on shelf.</p>
+          <p>That is why planning teams treat the forecast as an input to a decision instead of an answer. The useful question is never whether the model is right, it is which decisions the model is accurate enough to carry.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="adopted-first" style="background: var(--mist); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">Why forecasting <em>adopted first</em></h2>
+        <p style="max-width: var(--prose); margin-top: var(--s3)">BCG found frontrunners concentrating effort where value is clearest in 2026, naming demand forecasting, pricing and transport optimization. Forecasting leads because it clears the three things that stall everything else.</p>
+        <div data-grid="cols3" style="margin-top: var(--s6)">
+          <div>
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">Data foundations</h3>
+              <p style="margin-top: var(--s2)">Bain named poor data foundations a primary stall factor in 2025. Forecasting is the one application where the data was already there, because shipment and sales history is kept for finance whether anyone models it or not.</p>
+            </div>
+          
+            <div>
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">Measurement</h3>
+              <p style="margin-top: var(--s2)">Forecast error has been measured for decades against an agreed baseline. A team can show whether a model beat what it replaced, which is the test most AI programs cannot run.</p>
+            </div>
+          
+            <div>
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">Ownership</h3>
+              <p style="margin-top: var(--s2)">Deloitte found 54% of AI strategy ownership sitting with technology leaders in 2026. Forecasting escapes that split, because the planning team that briefs the model also carries the inventory result.</p>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="models" style="background: var(--sand); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">Predictive analytics <em>and the model families</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <p>Four families cover what a CPG planning stack runs. Statistical baselines, which read level, trend and seasonality from a product's own history and remain the benchmark every other model has to beat. Machine learning regressors, which learn across many products at once and pick up effects a single series cannot see, such as a price move on a neighbouring SKU. Causal and promotion response models, which separate the lift a mechanic caused from the demand that was arriving anyway. And hierarchical reconciliation, which makes the store number, the region number and the national number agree, because a planning process cannot act on three forecasts that contradict each other.</p>
+          <p>Most vendors package two or three of these and name the package. The useful question is which family is doing the work on your hardest horizon, because that is where the accuracy difference between packages actually shows up.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gaps" style="background: var(--mist); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">Where internal history <em>runs out</em></h2>
+        <p style="max-width: var(--prose); margin-top: var(--s3)">A model trained on history can only describe demand the company has already served. Three cases fall outside that, and they are the three a planning team gets asked about most.</p>
+        <div style="max-width: var(--prose); margin-top: var(--s5)">
+          <div data-block>
+            <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">A product with no history</h3>
+            <p>A launch forecast has nothing to learn from, so teams substitute an analogue product. That works when the analogue is close and fails when the launch rides a need that is moving, which is exactly when a launch is worth doing.</p>
+          </div>
+          <div data-block>
+            <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">A market with no presence</h3>
+            <p>Door expansion and incremental distribution work need a demand read for places the company does not sell in yet. Internal history describes the current footprint, and micro-market targeting needs the demand shape of the next one.</p>
+          </div>
+          <div data-block>
+            <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">A category that is shifting underneath</h3>
+            <p>When the language consumers use changes, the products they buy change with it, and the shipment history lags both. A model reading only history sees the shift after it has already priced into the shelf.</p>
+          </div>
+        </div>
+        <div data-callout style="max-width: var(--prose); margin-top: var(--s5)">
+          <p>The third case is visible in current category data. In US packaged food, energy as a consumer need is up more than 58% over the past 12 months while vegan as a label is down more than 32%, on figures pulled from Tastewise for the US market on September 4, 2026. A forecast built on the last three years of shipments carries the second trend and misses the first.</p>
+        </div>
+        <p style="max-width: var(--prose); margin-top: var(--s5)">So external demand signal is a planning input rather than a marketing one. Bain named high-quality proprietary data and real-time insight a growing source of competitive advantage across the ecosystem in 2025, and forecasting is where that advantage is easiest to price, because the cost of being wrong is already measured.</p>
+      </div>
+    </section>
+
+    <section id="promotion" style="background: var(--sand); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">Sales forecasting <em>and promotion response</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <p>Sales forecasting and demand forecasting answer different questions. The demand forecast estimates what consumers will take off shelf. The sales forecast estimates what the retailer will order, and the two diverge whenever inventory moves through the trade rather than through the till.</p>
+          <p>Promotion response sits between them. A response model reads past promotions by retailer, region and mechanic, then estimates incremental volume for a planned one. That estimate is what turns promo ROI into a defensible number, and it is also what shows which cross-sell promotions paid for themselves.</p>
+          <p>The limit is the same as everywhere else in this stack. A response model knows the mechanics you have already run, in the categories you already sell, and a mechanic on a need that was not moving last year is outside what it has seen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="judged" style="background: var(--mist); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">How a forecast <em>gets judged</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <p>Accuracy comes first, and it only means something with a stated horizon, level and baseline. A weekly national number for an established product is a different problem from a store-cluster launch number, and a model that beats a naive baseline by a point at one level can lose at the other. A vendor accuracy claim missing any of the three is unreadable.</p>
+          <p>Bias is the measure planners argue about, because it names two opposite costs. Forecast high and the error lands in <span style="font-weight: 600">working capital</span>, as stock sitting in the wrong place. Forecast low and it lands in <span style="font-weight: 600">service level</span>, as a gap on shelf and a retailer conversation. A model can be accurate on average and consistently biased, which is why the sign of the error gets reviewed separately from its size.</p>
+          <p>Margin closes the loop. Accuracy is a model measure, and the number that defends a planning investment is incremental margin from better allocation and better promotion response. Deloitte found only 16.5% of retail and CPG executives able to quantify a return on AI in 2026, and forecasting is the application where that quantification is most available.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="data-source" style="background: var(--sand); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">Where the demand data <em>comes from</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <p>The external signal in the three gap cases above comes from Tastewise, a food and beverage AI platform that tracks consumer interactions, retail products and foodservice menus across 59 markets. Figures are pulled for a stated market and a stated date, and they are rounded down so they stay true as the underlying data moves.</p>
+          <p>Third-party statistics on this page name their source and year inside the sentence that carries them, and the full publication records sit in the page markup.</p>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s5)">
+          <a data-btn="citrus" href="https://tastewise.io/solutions/product-innovation?utm_source=aiforcpg.org&utm_medium=referral&utm_campaign=seo-micro&utm_content=forecasting-innovation-cta" target="_blank" rel="noopener">Product innovation <span data-chev-r>&#9654;</span></a>
+          <a data-btn="citrus" href="https://tastewise.io/solutions/retail-sales?utm_source=aiforcpg.org&utm_medium=referral&utm_campaign=seo-micro&utm_content=forecasting-retail-cta" target="_blank" rel="noopener">Retail sales enablement <span data-chev-r>&#9654;</span></a>
+        </div>
+        <div data-cta-row style="margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--rule)">
+          <p style="margin: 0; max-width: 520px">Book a 20-minute teardown of your category against the live data.</p>
+          <a data-btn="deep" href="https://tastewise.io/request-a-demo?utm_source=aiforcpg.org&utm_medium=referral&utm_campaign=seo-micro&utm_content=forecasting-teardown-cta" target="_blank" rel="noopener" style="flex: 0 0 auto">Talk to us <span data-chev-r>&#9654;</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" style="background: var(--mist); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">Questions about <em>CPG demand forecasting</em></h2>
+        <div style="max-width: 900px; margin-top: var(--s6); border-top: 1px solid var(--rule)">
+          <div style="border-bottom: 1px solid var(--rule)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" id="faq-q-0" data-faq="0" aria-controls="faq-panel-0" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--deep); cursor: pointer">
+                  <span>What is AI demand forecasting in CPG?</span>
+                  <span data-chev aria-hidden="true" style="flex: 0 0 auto; font-size: 14px; color: var(--clay-deep); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div id="faq-panel-0" role="region" aria-labelledby="faq-q-0" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4)">It is the use of statistical and machine learning models to predict what will sell, by product and location, over a planning horizon. The output feeds inventory allocation, production planning and promotion response. BCG found frontrunners concentrating on demand forecasting, pricing and transport optimization in 2026, where the value case is clearest.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" id="faq-q-1" data-faq="1" aria-controls="faq-panel-1" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--deep); cursor: pointer">
+                  <span>How accurate is AI demand forecasting in CPG?</span>
+                  <span data-chev aria-hidden="true" style="flex: 0 0 auto; font-size: 14px; color: var(--clay-deep); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div id="faq-panel-1" role="region" aria-labelledby="faq-q-1" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4)">Accuracy depends on the horizon and the level. A weekly forecast for an established product at national level is a far easier problem than a launch forecast for one store cluster. Any accuracy claim without a stated horizon, level and baseline says nothing, so ask a vendor for all three.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" id="faq-q-2" data-faq="2" aria-controls="faq-panel-2" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--deep); cursor: pointer">
+                  <span>What data does CPG demand planning need?</span>
+                  <span data-chev aria-hidden="true" style="flex: 0 0 auto; font-size: 14px; color: var(--clay-deep); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div id="faq-panel-2" role="region" aria-labelledby="faq-q-2" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4)">Internal shipment and sales history is the base, joined to promotion calendars, pricing and distribution. Calendar and weather effects improve seasonal reads. Products with no history, new markets and shifting categories need external demand signal, because internal history cannot describe a need the company has not sold against yet.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" id="faq-q-3" data-faq="3" aria-controls="faq-panel-3" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--deep); cursor: pointer">
+                  <span>How does AI forecast promotion response?</span>
+                  <span data-chev aria-hidden="true" style="flex: 0 0 auto; font-size: 14px; color: var(--clay-deep); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div id="faq-panel-3" role="region" aria-labelledby="faq-q-3" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4)">A promotion response model separates the lift caused by a mechanic from the demand that would have arrived anyway. It reads past promotions by retailer, region and mechanic, then estimates incremental volume for a planned one. That estimate is what turns promo ROI into a number a revenue growth team can defend.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" id="faq-q-4" data-faq="4" aria-controls="faq-panel-4" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--deep); cursor: pointer">
+                  <span>Why do CPG forecasts miss on new products?</span>
+                  <span data-chev aria-hidden="true" style="flex: 0 0 auto; font-size: 14px; color: var(--clay-deep); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div id="faq-panel-4" role="region" aria-labelledby="faq-q-4" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4)">A new product has no history, so a model trained on history has nothing to learn from. Teams substitute an analogue product, which works when the analogue is close and fails when the launch rides a need that is moving. External demand signal is what sizes the need before the first shipment.</p>
+              </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    
+      <section id="related" style="background: var(--sand); padding: var(--sec-pad) var(--s3)">
+        <div style="max-width: var(--wide); margin: 0 auto">
+          <div data-grid="rel3">
+            <a href="/use-cases/" style="display: block; background: var(--white); border-top: 3px solid var(--citrus-mid); padding: var(--s4) var(--s3); text-decoration: none">
+                <span style="display: block; font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">AI use cases across CPG functions</span>
+              </a>
+            
+              <a href="/generative-ai/" style="display: block; background: var(--white); border-top: 3px solid var(--citrus-mid); padding: var(--s4) var(--s3); text-decoration: none">
+                <span style="display: block; font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">Generative and agentic AI</span>
+              </a>
+            
+              <a href="/sales-and-trade/" style="display: block; background: var(--white); border-top: 3px solid var(--citrus-mid); padding: var(--s4) var(--s3); text-decoration: none">
+                <span style="display: block; font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">AI for sales and trade</span>
+              </a>
+          </div>
+        </div>
+      </section>
+    
+
+  </main>
+
+  <footer style="background: var(--deep); color: var(--white); padding: var(--s7) var(--s3) var(--s4); overflow: hidden">
+    <div style="max-width: var(--wide); margin: 0 auto">
+      <div data-grid="foot">
+        <div>
+          <div style="font: 700 clamp(52px, 10vw, 128px)/0.92 var(--font); letter-spacing: -4px; color: var(--citrus); opacity: 0.22">AI for CPG</div>
+        </div>
+        <div data-grid="footlinks">
+          <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <span style="font: 600 11px/1.4 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--citrus)">On this page</span>
+            <a href="#models" style="color: var(--white); font-size: 15px">The model families</a>
+            <a href="#gaps" style="color: var(--white); font-size: 15px">Where history runs out</a>
+            <a href="#judged" style="color: var(--white); font-size: 15px">How a forecast gets judged</a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <span style="font: 600 11px/1.4 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--citrus)">About</span>
+            <a href="/" style="color: var(--white); font-size: 15px">AI for CPG hub</a>
+            <a href="#data-source" style="color: var(--white); font-size: 15px">Where the demand data comes from</a>
+            <a href="#faq" style="color: var(--white); font-size: 15px">Questions</a>
+          </div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid var(--rule-light); margin-top: var(--s6); padding-top: var(--s3); display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: space-between; font: 500 var(--t-small)/1.5 var(--font); letter-spacing: 0.04em; color: rgba(255,255,255,0.7)">
+        <span>AI for CPG is published by Tastewise, a food and beverage AI platform.</span>
+        <span>Last updated September 15, 2026</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Mobile navigation ----------------------------------------------------- */
+  var menu = document.getElementById("site-menu");
+  var openers = document.querySelectorAll("[data-menu-toggle]");
+  function setMenu(open) {
+    menu.hidden = !open;
+    for (var i = 0; i < openers.length; i++) {
+      if (openers[i].hasAttribute("aria-expanded")) {
+        openers[i].setAttribute("aria-expanded", open ? "true" : "false");
+      }
+    }
+  }
+  for (var i = 0; i < openers.length; i++) {
+    openers[i].addEventListener("click", function () { setMenu(menu.hidden); });
+  }
+  var closers = document.querySelectorAll("[data-menu-close]");
+  for (var c = 0; c < closers.length; c++) {
+    closers[c].addEventListener("click", function () { setMenu(false); });
+  }
+
+  /* FAQ accordion, one panel open at a time -------------------------------- */
+  var faqButtons = [].slice.call(document.querySelectorAll("[data-faq]"));
+  var openIndex = -1;
+  faqButtons.forEach(function (btn, i) {
+    if (btn.getAttribute("aria-expanded") === "true") openIndex = i;
+    btn.addEventListener("click", function () {
+      openIndex = openIndex === i ? -1 : i;
+      faqButtons.forEach(function (b, j) {
+        var isOpen = openIndex === j;
+        var panel = document.getElementById("faq-panel-" + j);
+        var chev = b.querySelector("[data-chev]");
+        b.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        panel.style.maxHeight = isOpen ? "640px" : "0px";
+        panel.style.opacity = isOpen ? "1" : "0";
+        if (chev) chev.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
+      });
+    });
+  });
+
+  /* Reveal on scroll ------------------------------------------------------- */
+  /* Progressive enhancement: [data-reveal] is added at runtime, so nothing is
+     hidden with JS off. Anything already in view is shown without animating. */
+  if (typeof IntersectionObserver === "undefined") return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  var targets = [].slice.call(document.querySelectorAll("h2, [data-stat-figure]"));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.setAttribute("data-shown", "1");
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  targets.forEach(function (t) {
+    var box = t.getBoundingClientRect();
+    t.setAttribute("data-reveal", "");
+    if (box.top < window.innerHeight && box.bottom > 0) {
+      t.setAttribute("data-shown", "1");
+      return;
+    }
+    io.observe(t);
+  });
+
+  /* Visibility must never depend on the observer firing: reveal everything
+     unconditionally after the animation window, so nothing can stay hidden. */
+  var revealTimer;
+  function revealAll() {
+    targets.forEach(function (t) { t.setAttribute("data-shown", "1"); });
+    io.disconnect();
+    window.removeEventListener("scroll", onFirstScroll);
+  }
+  function onFirstScroll() {
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(revealAll, 600);
+  }
+  window.addEventListener("scroll", onFirstScroll, { passive: true });
+  revealTimer = setTimeout(revealAll, 1200);
+})();
+</script>
+</body>
+</html>
