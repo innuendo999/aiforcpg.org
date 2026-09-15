@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI for CPG: where it works and what scales</title>
+<meta name="description" content="AI for CPG is widely piloted and rarely scaled. Where it works today, what separates the companies scaling it, and what the current demand data shows." />
+<link rel="canonical" href="https://aiforcpg.org/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="AI for CPG: where it works and what scales" />
+<meta property="og:url" content="https://aiforcpg.org/" />
+<meta property="og:site_name" content="AI for CPG" />
+<style>
+  :root {
+    --deep: #123047;
+    --deep-ink: #0B1F2E;
+    --citrus: #C8E86B;
+    --citrus-mid: #9FD34A;
+    --sand: #F6F3EA;
+    --clay: #E2714A;
+    --clay-deep: #B4451F;
+    --mist: #DCE9E5;
+    --white: #FFFFFF;
+    --rule: rgba(18,48,71,0.18);
+    --rule-light: rgba(255,255,255,0.22);
+    --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 48px;
+    --s6: 64px; --s7: 96px; --s8: 128px;
+    --r-sm: 0px; --r-md: 4px;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, sans-serif;
+    --t-display: 64px; --t-h2: 44px; --t-h3: 22px;
+    --t-body: 17px; --t-small: 12px; --t-stat: 72px;
+    --wide: 1200px; --prose: 680px;
+    --sec-pad: var(--s7);
+  }
+  body { margin: 0; background: var(--sand); color: var(--deep-ink); font: 400 var(--t-body)/1.6 var(--font); -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+  a { color: var(--clay-deep); text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--deep); }
+  h1, h2, h3, p, ul, ol { margin: 0; }
+  em { font-style: italic; }
+  [data-caption] { display: none; }
+  [data-faq-panel] { overflow: hidden; transition: max-height 400ms ease, opacity 400ms ease; }
+  [data-chev] { transition: transform 400ms ease; }
+  [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity 500ms ease, transform 500ms ease; }
+  [data-reveal][data-shown="1"] { opacity: 1; transform: none; }
+  [data-grid="stats4"] { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s4); }
+  [data-grid="t4"] { display: grid; grid-template-columns: 1fr 1.15fr 0.85fr 1.05fr; }
+  [data-grid="t3r"] { display: grid; grid-template-columns: 1fr 1.3fr 250px; }
+  [data-grid="cards2"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); align-items: start; }
+  [data-grid="statrow"] { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: var(--s4); align-items: start; }
+  [data-grid="barriers2"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6) var(--s5); }
+  [data-barrier] { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: var(--s2); align-items: start; }
+  [data-barrier-n] { font: 700 56px/0.85 var(--font); letter-spacing: -3px; color: var(--citrus); opacity: 0.15; }
+  [data-grid="foot"] { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: var(--s5); align-items: end; }
+  [data-grid="footlinks"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
+  [data-signal-grid] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s4); row-gap: 40px; margin-top: var(--s5); }
+  [data-signal-cell] { display: grid; grid-template-columns: 140px minmax(0, 1fr); align-items: start; padding: var(--s3) 0; border-top: 1px solid rgba(18,48,71,0.28); }
+  [data-signal-fig] { font: 700 48px/1 var(--font); letter-spacing: -1.5px; white-space: nowrap; }
+  [data-signal-cap] { font: 400 16px/1.45 var(--font); color: var(--deep-ink); }
+  @media (max-width: 720px) {
+    [data-signal-grid] { grid-template-columns: minmax(0, 1fr); row-gap: var(--s3); }
+    [data-signal-cell] { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
+  }
+  [data-cta-row] { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+  @media (max-width: 720px) { [data-cta-row] { flex-direction: column; align-items: flex-start; gap: var(--s4); } }
+  [data-src] { font: 500 var(--t-small)/1.5 var(--font); letter-spacing: 0.04em; text-decoration: none; border-bottom: 0; color: rgba(18,48,71,0.72); }
+  [data-src="dark"] { color: rgba(255,255,255,0.55); }
+  [data-src="citrus"] { color: rgba(18,48,71,0.92); }
+  [data-statlist] { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--s4); align-items: start; }
+  [data-statlist] > div:first-child { font: 700 44px/1.28 var(--font); letter-spacing: -1px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+  @media (max-width: 720px) { [data-statlist] { grid-template-columns: minmax(0, 1fr); gap: var(--s2); } }
+  [data-role-card] { display: grid; grid-template-columns: 38% 38% 24%; gap: var(--s3); align-items: center; min-height: 104px; padding: var(--s3); }
+  @media (max-width: 1080px) {
+    [data-role-card] { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+    [data-role-card] > div:last-child { justify-content: flex-start !important; }
+  }
+  [data-role-btn] { transition: background 160ms ease; }
+  [data-role-btn]:hover { background: #D7F08C; }
+  [data-role-btn]:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
+  [data-role-btn] [data-chev-r] { display: inline-block; transition: transform 160ms ease; }
+  [data-role-btn]:hover [data-chev-r] { transform: translateX(3px); }
+  @media (max-width: 1080px) {
+    :root { --t-display: 46px; --t-h2: 34px; --t-stat: 56px; }
+    [data-grid="stats4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    [data-grid="foot"] { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  }
+  @media (max-width: 720px) {
+    :root { --t-display: 36px; --t-h2: 28px; --t-stat: 46px; --sec-pad: var(--s6); }
+    [data-grid="stats4"], [data-grid="cards2"], [data-grid="footlinks"], [data-grid="statrow"] { grid-template-columns: minmax(0, 1fr); }
+    [data-grid="barriers2"] { grid-template-columns: minmax(0, 1fr); }
+    [data-barrier] { grid-template-columns: minmax(0, 1fr); }
+    [data-grid="t4"], [data-grid="t3r"] { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
+    [data-table-head] { display: none; }
+    [data-caption] { display: block; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
+    [data-table-row] { border: 1px solid var(--rule); padding: var(--s2); margin-bottom: var(--s2); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+    [data-reveal] { opacity: 1 !important; transform: none !important; }
+  }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"AI for CPG: where it works and what scales","url":"https://aiforcpg.org/","publisher":{"@type":"Organization","name":"Tastewise","url":"https://tastewise.io/"},"citation":[{"@type":"CreativeWork","name":"AI in CPG and Retail","author":{"@type":"Organization","name":"Boston Consulting Group and the Consumer Goods Forum"},"datePublished":"2026-06-24"},{"@type":"CreativeWork","name":"The AI-Forward CPG Marketing Organization","author":{"@type":"Organization","name":"Boston Consulting Group"},"datePublished":"2026-02-12"},{"@type":"CreativeWork","name":"State of AI in retail and CPG","author":{"@type":"Organization","name":"Deloitte"},"datePublished":"2026-06-18"},{"@type":"CreativeWork","name":"2026 Consumer Products Outlook","author":{"@type":"Organization","name":"Deloitte"},"datePublished":"2026-01-01"},{"@type":"CreativeWork","name":"What AI Means for Consumer Products Companies' Margins","author":{"@type":"Organization","name":"Bain & Company"},"datePublished":"2025-10-17"},{"@type":"CreativeWork","name":"The Future of Consumer Products in the Age of AI","author":{"@type":"Organization","name":"Bain & Company"}}]}</script>
+</head>
+<body>
+
+<div style="background: var(--sand); overflow-x: hidden">
+
+
+  <nav id="site-menu" hidden style="position: fixed; inset: 0; z-index: 50; background: var(--deep); overflow-y: auto">
+    <div style="max-width: var(--wide); margin: 0 auto; padding: var(--s5) var(--s3); display: flex; flex-direction: column; gap: var(--s3)">
+      <button type="button" data-menu-toggle aria-label="Close navigation" style="align-self: flex-end; background: none; border: 1px solid var(--rule-light); color: var(--white); width: 44px; height: 44px; font: 400 20px/1 var(--font); cursor: pointer">&#215;</button>
+      <a href="#solutions" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">Solutions</a>
+      <a href="#where-it-works" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">Where it works</a>
+      <a href="#live-data" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">The data</a>
+      <a href="#faq" data-menu-close style="font: 700 var(--t-h2)/1.1 var(--font); color: var(--citrus); text-decoration: none; letter-spacing: -1px">FAQ</a>
+    </div>
+  </nav>
+
+  <main id="top">
+
+    <section style="background: var(--deep); padding: 116px 0 0; position: relative; overflow: hidden; min-height: 100vh; display: grid; align-content: center">
+      <div aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden; isolation: isolate; background: var(--deep)">
+        <img src="assets/hero-carts.jpg" alt="" width="5546" height="3697" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; filter: grayscale(1) contrast(1.2) brightness(0.85); mix-blend-mode: screen" />
+        <div style="position: absolute; inset: 0; background: var(--citrus); mix-blend-mode: multiply"></div>
+      </div>
+      <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(11,31,46,0.82) 0%, rgba(11,31,46,0.60) 45%, rgba(11,31,46,0.86) 100%)"></div>
+      <header style="position: absolute; top: 0; left: 0; right: 0; z-index: 30; background: transparent">
+        <div style="max-width: var(--wide); margin: 0 auto; padding: var(--s3); display: flex; align-items: center; justify-content: space-between; gap: var(--s3)">
+          <a href="#top" style="text-decoration: none; flex: 0 0 auto">
+            <span style="display: block; font: 700 20px/1.1 var(--font); color: var(--white); letter-spacing: -0.5px; white-space: nowrap">AI for CPG</span>
+            <span style="display: flex; align-items: center; gap: 6px; margin-top: 3px">
+              <span style="font: 500 11px/1.3 var(--font); color: var(--citrus); letter-spacing: 0.06em">by</span>
+              <img src="assets/tastewise-logo.png" alt="Tastewise" width="1602" height="346" style="display: block; height: 13px; width: auto; filter: brightness(0) invert(1);" />
+            </span>
+          </a>
+          <div style="display: flex; align-items: center; gap: var(--s2)">
+            <a href="#solutions" style="background: var(--citrus); color: var(--deep); font: 600 15px/1 var(--font); padding: 12px 22px; border-radius: 999px; text-decoration: none; white-space: nowrap">Talk to us</a>
+            <button type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu" aria-label="Open navigation" style="width: 44px; height: 44px; background: none; border: 1px solid var(--rule-light); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px">
+              <span style="display: block; width: 18px; height: 1.5px; background: var(--white)"></span>
+              <span style="display: block; width: 18px; height: 1.5px; background: var(--white)"></span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div style="position: relative; width: 100%; max-width: var(--wide); margin: 0 auto; padding: 0 var(--s3) var(--s7); box-sizing: border-box">
+        <div style="max-width: 840px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--s3)">
+          <h1 style="font: 700 var(--t-display)/1.02 var(--font); letter-spacing: -2px; color: var(--citrus)">AI for CPG</h1>
+          <p style="max-width: 560px; font: 400 20px/1.55 var(--font); color: var(--white)">Most consumer packaged goods companies have AI somewhere in the business. Far fewer have it running at scale.</p>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin-top: var(--s1)">
+            <a href="#solutions" style="background: var(--citrus); color: var(--deep); font: 600 16px/1 var(--font); padding: 15px 26px; text-decoration: none; border-radius: var(--r-md)">See solutions for CPG</a>
+            <a href="#where-it-works" style="background: none; border: 1px solid var(--white); color: var(--white); font: 600 16px/1 var(--font); padding: 14px 26px; text-decoration: none; border-radius: var(--r-md)">Where AI works today</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="background: var(--citrus); padding: var(--s6) var(--s3)">
+      <div data-grid="stats4" style="max-width: var(--wide); margin: 0 auto">
+        <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <div data-stat-figure style="font: 700 var(--t-stat)/0.95 var(--font); letter-spacing: -2.5px; color: var(--deep)">75%</div>
+            <div style="font: 400 15px/1.45 var(--font); color: var(--deep-ink)">of CPG companies are piloting or exploring AI</div>
+          </div>
+        
+          <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <div data-stat-figure style="font: 700 var(--t-stat)/0.95 var(--font); letter-spacing: -2.5px; color: var(--deep)">18%</div>
+            <div style="font: 400 15px/1.45 var(--font); color: var(--deep-ink)">of CPG companies are scaling impact</div>
+          </div>
+        
+          <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <div data-stat-figure style="font: 700 var(--t-stat)/0.95 var(--font); letter-spacing: -2.5px; color: var(--deep)">16.5%</div>
+            <div style="font: 400 15px/1.45 var(--font); color: var(--deep-ink)">of retail and CPG executives can quantify a return on AI</div>
+          </div>
+        
+          <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <div data-stat-figure style="font: 700 var(--t-stat)/0.95 var(--font); letter-spacing: -2.5px; color: var(--deep)">13%</div>
+            <div style="font: 400 15px/1.45 var(--font); color: var(--deep-ink)">of CPG marketing leaders have generative AI fully integrated</div>
+          </div>
+      </div>
+    </section>
+
+    <section id="what-it-is" style="background: var(--sand); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">AI for CPG <em>explained</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <div style="border-left: 6px solid var(--citrus-mid); padding-left: var(--s3)">
+            <p style="font: 400 26px/1.4 var(--font); color: var(--deep-ink); letter-spacing: -0.4px">AI for CPG is the use of machine learning, forecasting and generative models across consumer goods functions, from demand sensing to product development, tracked here with live category data from Tastewise.</p>
+          </div>
+          <p>The category boundary matters, and the scope inside it is wide. Assortment, pricing, trade promotion, packaging and marketing production all sit within AI for CPG. The category sits next to AI in retail and AI in food manufacturing, and the three overlap at the shelf. A CPG use case starts with the brand owner. A retail use case starts with the store. A manufacturing use case starts with the line.</p>
+        </div>
+      </div>
+    </section>
+
+    <div aria-hidden="true" style="position: relative; aspect-ratio: 21 / 9; background: var(--deep); overflow: hidden; isolation: isolate">
+      <img src="assets/hero-retail-shelf.jpg" alt="" width="2482" height="4411" loading="lazy" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; filter: grayscale(1) contrast(1.28) brightness(0.72); mix-blend-mode: screen" />
+      <div style="position: absolute; inset: 0; background: var(--citrus); mix-blend-mode: multiply"></div>
+    </div>
+
+    <section id="solutions" style="background: var(--deep); color: var(--white); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--white)">AI solutions for CPG: <em style="color: var(--citrus)">what each one produces</em></h2>
+        <p style="max-width: var(--prose); margin-top: var(--s3); color: rgba(255,255,255,0.82)">Technology names describe how a system works. Buyers compare on what it produces. The AI solutions below are the outputs a CPG team briefs against, grouped by what lands on the desk at the end.</p>
+
+        <div style="margin-top: var(--s5); border-top: 1px solid var(--rule-light)">
+          <div data-grid="t4" data-table-head style="font: 600 11px/1.4 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--citrus); border-bottom: 1px solid var(--rule-light)">
+            <div style="padding: var(--s2) var(--s2) var(--s2) 0">Capability</div>
+            <div style="padding: var(--s2)">What it produces</div>
+            <div style="padding: var(--s2)">Who briefs it</div>
+            <div style="padding: var(--s2)">Input it needs</div>
+          </div>
+          <div data-grid="t4" data-table-row style="border-bottom: 1px solid var(--rule-light)">
+              <div style="padding: 20px var(--s2) 20px 0; font-weight: 700; color: var(--white)"><span data-caption>Capability</span>Demand sensing</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>What it produces</span>A ranked view of rising and falling consumer needs in a category</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Who briefs it</span>Insights, brand, planning</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Input it needs</span>External consumer language, retail and menu data</div>
+            </div>
+          
+            <div data-grid="t4" data-table-row style="border-bottom: 1px solid var(--rule-light)">
+              <div style="padding: 20px var(--s2) 20px 0; font-weight: 700; color: var(--white)"><span data-caption>Capability</span>Concept validation</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>What it produces</span>A read on whether a concept has demand before a prototype exists</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Who briefs it</span>Innovation, R&amp;D</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Input it needs</span>Need and claim data, category benchmarks</div>
+            </div>
+          
+            <div data-grid="t4" data-table-row style="border-bottom: 1px solid var(--rule-light)">
+              <div style="padding: 20px var(--s2) 20px 0; font-weight: 700; color: var(--white)"><span data-caption>Capability</span>Whitespace mapping</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>What it produces</span>Need and format combinations with no strong incumbent</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Who briefs it</span>Innovation, category strategy</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Input it needs</span>Product coverage plus demand signal</div>
+            </div>
+          
+            <div data-grid="t4" data-table-row style="border-bottom: 1px solid var(--rule-light)">
+              <div style="padding: 20px var(--s2) 20px 0; font-weight: 700; color: var(--white)"><span data-caption>Capability</span>Trade promotion optimization</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>What it produces</span>Promotion response by retailer, region and mechanic</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Who briefs it</span>Sales, revenue growth management</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Input it needs</span>Internal shipment data plus external demand</div>
+            </div>
+          
+            <div data-grid="t4" data-table-row style="border-bottom: 1px solid var(--rule-light)">
+              <div style="padding: 20px var(--s2) 20px 0; font-weight: 700; color: var(--white)"><span data-caption>Capability</span>Assortment localization</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>What it produces</span>Range recommendations by store cluster or region</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Who briefs it</span>Category management, key accounts</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Input it needs</span>Regional demand plus retailer data</div>
+            </div>
+          
+            <div data-grid="t4" data-table-row style="border-bottom: 1px solid var(--rule-light)">
+              <div style="padding: 20px var(--s2) 20px 0; font-weight: 700; color: var(--white)"><span data-caption>Capability</span>Creative production</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>What it produces</span>Campaign variants and packaging copy against a defined need</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Who briefs it</span>Marketing</div>
+              <div style="padding: 20px var(--s2); color: rgba(255,255,255,0.82)"><span data-caption>Input it needs</span>Consumer language plus brand guidelines</div>
+            </div>
+        </div>
+
+        <p style="max-width: var(--prose); margin-top: var(--s5); color: rgba(255,255,255,0.82)">Two of these run on data that sits outside the company's own systems. Demand sensing and whitespace mapping need signal beyond internal sales history, which is what makes them the pair a team reaches for when the job is finding an unmet need or an adjacency with growth left in it. Bain named high-quality proprietary data and real-time insight a growing source of competitive advantage across the ecosystem in 2025. Deloitte reports CPG companies feeling more AI impact in product development than retailers do in 2026, at 27% against 18%.</p>
+        <p style="max-width: var(--prose); margin-top: var(--s4); color: rgba(255,255,255,0.82)">The data behind the capabilities above sits in the Tastewise platform. Pick the row that matches your job, whether that is retail pitch readiness, a trend-to-campaign pipeline, portfolio whitespace or menu adoption by segment.</p>
+
+        <p style="margin-top: var(--s5)"></p>
+        <p style="margin-top: var(--s5)"><span style="font: 600 11px/1.4 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--citrus)">Where to go</span></p>
+        <div style="margin: var(--s3) var(--s3) 0; background: rgba(255,255,255,0.06)">
+          <div data-role-card style="border-top: 1px solid rgba(255,255,255,0.12)">
+              <div style="font: 700 19px/1.35 var(--font); color: var(--white)">Win retail listings and defend shelf space</div>
+              <div style="font: 400 16px/1.5 var(--font); color: rgba(255,255,255,0.72)">Demand by retailer and region, built into a sell-in story</div>
+              <div style="display: flex; justify-content: flex-end">
+                <a data-role-btn href="https://tastewise.io/solutions/retail-sales?utm_source=aiforcpg.org&amp;utm_medium=referral&amp;utm_campaign=seo-micro&amp;utm_content=home-bridge-retail-cta" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 240px; box-sizing: border-box; background: var(--citrus); color: var(--deep); font: 600 15px/1.2 var(--font); padding: 12px 20px; text-decoration: none; border-radius: var(--r-md); white-space: nowrap">Retail sales enablement <span data-chev-r style="font-size: 11px">&#9654;</span></a>
+              </div>
+            </div>
+          
+            <div data-role-card style="border-top: 1px solid rgba(255,255,255,0.12)">
+              <div style="font: 700 19px/1.35 var(--font); color: var(--white)">Turn trends into campaigns</div>
+              <div style="font: 400 16px/1.5 var(--font); color: rgba(255,255,255,0.72)">Consumer language by audience, refreshed monthly</div>
+              <div style="display: flex; justify-content: flex-end">
+                <a data-role-btn href="https://tastewise.io/solutions/consumer-marketing?utm_source=aiforcpg.org&amp;utm_medium=referral&amp;utm_campaign=seo-micro&amp;utm_content=home-bridge-marketing-cta" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 240px; box-sizing: border-box; background: var(--citrus); color: var(--deep); font: 600 15px/1.2 var(--font); padding: 12px 20px; text-decoration: none; border-radius: var(--r-md); white-space: nowrap">Consumer marketing <span data-chev-r style="font-size: 11px">&#9654;</span></a>
+              </div>
+            </div>
+          
+            <div data-role-card style="border-top: 1px solid rgba(255,255,255,0.12)">
+              <div style="font: 700 19px/1.35 var(--font); color: var(--white)">Find whitespace and validate concepts early</div>
+              <div style="font: 400 16px/1.5 var(--font); color: rgba(255,255,255,0.72)">Need and format gaps with no strong incumbent</div>
+              <div style="display: flex; justify-content: flex-end">
+                <a data-role-btn href="https://tastewise.io/solutions/product-innovation?utm_source=aiforcpg.org&amp;utm_medium=referral&amp;utm_campaign=seo-micro&amp;utm_content=home-bridge-innovation-cta" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 240px; box-sizing: border-box; background: var(--citrus); color: var(--deep); font: 600 15px/1.2 var(--font); padding: 12px 20px; text-decoration: none; border-radius: var(--r-md); white-space: nowrap">Product innovation <span data-chev-r style="font-size: 11px">&#9654;</span></a>
+              </div>
+            </div>
+          
+            <div data-role-card style="border-top: 1px solid rgba(255,255,255,0.12)">
+              <div style="font: 700 19px/1.35 var(--font); color: var(--white)">Sell into operators and match menu adoption</div>
+              <div style="font: 400 16px/1.5 var(--font); color: rgba(255,255,255,0.72)">Menu adoption by chain and segment</div>
+              <div style="display: flex; justify-content: flex-end">
+                <a data-role-btn href="https://tastewise.io/solutions/foodservice-sales-enablement?utm_source=aiforcpg.org&amp;utm_medium=referral&amp;utm_campaign=seo-micro&amp;utm_content=home-bridge-foodservice-cta" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 240px; box-sizing: border-box; background: var(--citrus); color: var(--deep); font: 600 15px/1.2 var(--font); padding: 12px 20px; text-decoration: none; border-radius: var(--r-md); white-space: nowrap">Foodservice sales <span data-chev-r style="font-size: 11px">&#9654;</span></a>
+              </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="where-it-works" style="background: var(--mist); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">AI in CPG: <em>where it works today</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <p>BCG found frontrunners concentrating effort where value is clearest in 2026, naming demand forecasting, pricing and transport optimization. Adoption in CPG AI is widest where the data is internal and the accuracy gain is measurable, which is why forecasting moved before door expansion and incremental distribution work did.</p>
+        </div>
+        <div id="guides" data-grid="cards2" style="margin-top: var(--s5)">
+          <a data-guide-card href="/use-cases/" style="display: block; background: var(--white); border-top: 3px solid var(--citrus-mid); padding: var(--s4) var(--s3); text-decoration: none">
+              <span style="display: block; font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">AI use cases across CPG functions</span>
+              <span style="display: block; font: 400 15px/1.55 var(--font); color: var(--deep-ink); opacity: 0.78; margin-top: var(--s2)">Every deployed use case by function, with the input each one needs.</span>
+            </a>
+          
+            <a data-guide-card href="/generative-ai/" style="display: block; background: var(--white); border-top: 3px solid var(--citrus-mid); padding: var(--s4) var(--s3); text-decoration: none">
+              <span style="display: block; font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">Generative and agentic AI</span>
+              <span style="display: block; font: 400 15px/1.55 var(--font); color: var(--deep-ink); opacity: 0.78; margin-top: var(--s2)">What generative and agentic systems produce, adoption of agentic capability and where the review load lands.</span>
+            </a>
+          
+            <a data-guide-card href="/sales-and-trade/" style="display: block; background: var(--white); border-top: 3px solid var(--citrus-mid); padding: var(--s4) var(--s3); text-decoration: none">
+              <span style="display: block; font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">AI for sales and trade</span>
+              <span style="display: block; font: 400 15px/1.55 var(--font); color: var(--deep-ink); opacity: 0.78; margin-top: var(--s2)">Trade promotion, assortment and the retailer data agreements that shape both.</span>
+            </a>
+          
+            <a data-guide-card href="/forecasting/" style="display: block; background: var(--white); border-top: 3px solid var(--citrus-mid); padding: var(--s4) var(--s3); text-decoration: none">
+              <span style="display: block; font: 700 var(--t-h3)/1.3 var(--font); color: var(--deep)">Demand forecasting</span>
+              <span style="display: block; font: 400 15px/1.55 var(--font); color: var(--deep-ink); opacity: 0.78; margin-top: var(--s2)">Forecast accuracy, promotion response and how planning teams measure a model.</span>
+            </a>
+        </div>
+      </div>
+    </section>
+
+    <div aria-hidden="true" style="position: relative; aspect-ratio: 16 / 9; background: var(--deep); overflow: hidden; isolation: isolate">
+      <img src="assets/band-supermarket-aisle.jpg" alt="" width="3000" height="4000" loading="lazy" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 26%; filter: grayscale(1) contrast(1.15) brightness(1.5); mix-blend-mode: screen" />
+      <div style="position: absolute; inset: 0; background: var(--citrus); mix-blend-mode: multiply"></div>
+    </div>
+
+    <section id="adoption" style="background: var(--sand); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">AI in the CPG industry: <em>adoption and returns in 2026</em></h2>
+        <p style="max-width: var(--prose); margin-top: var(--s3)">Adoption is close to universal and scaling is rare. Every 2026 survey measures that gap.</p>
+        <div style="margin-top: var(--s5); display: flex; flex-direction: column">
+          <div data-statlist style="border-top: 1px solid var(--rule); padding: 20px 0">
+              <div data-stat-figure style="color: var(--clay-deep)">48%</div>
+              <p style="font: 400 17px/1.55 var(--font); color: var(--deep-ink)">of consumer products companies sat at the exploratory stage of AI maturity in Bain's 2025 Digital Leadership Survey, n=52</p>
+            </div>
+          
+            <div data-statlist style="border-top: 1px solid var(--rule); padding: 20px 0">
+              <div data-stat-figure style="color: var(--clay-deep)">45%</div>
+              <p style="font: 400 17px/1.55 var(--font); color: var(--deep-ink)">of retailers are scaling impact and 40% have barely started, BCG and the Consumer Goods Forum found in 2026. Retail splits in two where CPG does not</p>
+            </div>
+          
+            <div data-statlist style="border-top: 1px solid var(--rule); padding: 20px 0">
+              <div data-stat-figure style="color: var(--clay-deep)">220 to 350</div>
+              <p style="font: 400 17px/1.55 var(--font); color: var(--deep-ink)">basis points of cumulative earnings before interest and taxes across the demand value chain, on BCG's 2026 estimate</p>
+            </div>
+          
+            <div data-statlist style="border-top: 1px solid var(--rule); padding: 20px 0">
+              <div data-stat-figure style="color: var(--clay-deep)">3 to 5</div>
+              <p style="font: 400 17px/1.55 var(--font); color: var(--deep-ink)">percentage points of operating margin could be added by scaling AI, Bain estimates</p>
+            </div>
+          
+            <div data-statlist style="border-top: 1px solid var(--rule); padding: 20px 0">
+              <div data-stat-figure style="color: var(--clay-deep)">82%</div>
+              <p style="font: 400 17px/1.55 var(--font); color: var(--deep-ink)">plan to increase AI investment in the next 12 months, Deloitte found across 200 executives in 2026</p>
+            </div>
+        </div>
+        <p style="max-width: var(--prose); margin-top: var(--s5)">The same shape appears in each survey. Starting a pilot is cheap, and turning one into a process the business depends on takes budget, data work and a senior owner.</p>
+      </div>
+    </section>
+
+    <section id="barriers" style="background: var(--deep); color: var(--white); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--white)">AI and CPG: <em style="color: var(--citrus)">scaled against stalled</em></h2>
+        <p style="max-width: var(--prose); margin-top: var(--s3); color: rgba(255,255,255,0.82)">Four barriers show up repeatedly in the 2026 survey work, and three of them are data problems wearing different clothes.</p>
+        <div data-grid="barriers2" style="margin-top: var(--s6)">
+          <div data-barrier>
+              <span aria-hidden="true" data-barrier-n>1</span>
+              <div>
+                <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--white)">Data foundations</h3>
+                <p style="margin-top: var(--s2); color: rgba(255,255,255,0.82)">Bain named poor data foundations a primary stall factor in 2025. Deloitte finds most current AI spend going into IT and data infrastructure, which is the same problem seen from the budget side.</p>
+              </div>
+            </div>
+          
+            <div data-barrier>
+              <span aria-hidden="true" data-barrier-n>2</span>
+              <div>
+                <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--white)">ROI measurement</h3>
+                <p style="margin-top: var(--s2); color: rgba(255,255,255,0.82)">BCG and the Consumer Goods Forum found more than half of companies across CPG and retail not formally measuring the return on their AI investments in 2026. Deloitte puts the share of executives who can quantify a return at 16.5%. Without a measured return, the program has nothing to defend at the next budget cycle, in the same way a campaign with no proven ROI loses its share of spend.</p>
+              </div>
+            </div>
+          
+            <div data-barrier>
+              <span aria-hidden="true" data-barrier-n>3</span>
+              <div>
+                <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--white)">Workflow integration</h3>
+                <p style="margin-top: var(--s2); color: rgba(255,255,255,0.82)">BCG reports seven in ten CPG marketing leaders expecting speed gains in 2026 and 13% reporting the tools fully integrated. The tools are in place and the workflows around them are still being redrawn.</p>
+              </div>
+            </div>
+          
+            <div data-barrier>
+              <span aria-hidden="true" data-barrier-n>4</span>
+              <div>
+                <h3 style="font: 700 var(--t-h3)/1.3 var(--font); color: var(--white)">Ownership</h3>
+                <p style="margin-top: var(--s2); color: rgba(255,255,255,0.82)">Deloitte found 54% of AI strategy ownership sitting with technology leaders, while the profit and loss owners carry the business result. Adoption also stays narrow, with wide use of AI reaching at most 36% of respondents in any function outside IT.</p>
+              </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="subsectors" style="background: var(--mist); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 900px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">AI in consumer goods <em>beyond food and beverage</em></h2>
+        <div style="max-width: var(--prose); margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3)">
+          <p>Deloitte splits consumer products into three groups, surveying 300 senior executives across food and beverage, household goods, and beauty and personal care in 2025. All three run the same function stack, and the data sources and the compliance overhead differ.</p>
+          <p><span style="font-weight: 700; color: var(--deep)">Food and beverage</span> moves fastest, because consumer language shifts faster than planning cycles and the menu and retail signal refreshes weekly. <span style="font-weight: 700; color: var(--deep)">Household goods</span> carries a heavier regulatory load on claims, which puts weight on packaging compliance. <span style="font-weight: 700; color: var(--deep)">Beauty and personal care</span> leans on personalization and image work, because fit and shade are visual problems.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="live-data" style="background: var(--citrus); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 940px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--deep)">What CPG demand signals <em>look like right now</em></h2>
+        <p style="max-width: var(--prose); margin-top: var(--s3); color: var(--deep-ink)">Demand sensing is the first capability in the solutions table above, and its input is the one thing a CPG company holds outside its own systems. This section shows what that input looks like in practice.</p>
+        <div data-signal-grid>
+          <div data-signal-cell>
+              <div data-signal-fig style="color: var(--deep)">+58%</div>
+              <p data-signal-cap>“Energy” is the fastest-rising consumer need in US packaged food, and the largest rising need by share.</p>
+            </div>
+          
+            <div data-signal-cell>
+              <div data-signal-fig style="color: var(--deep)">+26%</div>
+              <p data-signal-cap>Protein bar is the fastest-rising packaged format at meaningful scale, reading as emerging in the lifecycle.</p>
+            </div>
+          
+            <div data-signal-cell>
+              <div data-signal-fig style="color: rgba(18,48,71,0.55)">1,887</div>
+              <p data-signal-cap>Ingredients tracked in US packaged food over the past 12 months.</p>
+            </div>
+          
+            <div data-signal-cell>
+              <div data-signal-fig style="color: var(--clay-deep)">−32%</div>
+              <p data-signal-cap>“Vegan” is falling while functional framing rises, so the label loses ground as the diet gets described in other language. That shift is a reformulation signal before it is a marketing one.</p>
+            </div>
+        </div>
+        <p style="margin-top: var(--s4)"><span data-src="citrus">Tastewise, US packaged food, pulled September 4, 2026. Market USA and figures rounded down. “Metabolism” and “anti inflammatory” sit behind energy in the same rising set.</span></p>
+        <p style="max-width: var(--prose); margin-top: var(--s4); color: var(--deep-ink)">Directional signals are shown here. Precise category cuts, chain-level detail and the full ranked tables live in the Tastewise platform.</p>
+      </div>
+    </section>
+
+    <section id="faq" style="background: var(--deep); color: var(--white); padding: var(--sec-pad) var(--s3)">
+      <div style="max-width: var(--wide); margin: 0 auto">
+        <h2 style="margin-top: var(--s2); max-width: 940px; font: 700 var(--t-h2)/1.08 var(--font); letter-spacing: -1.2px; color: var(--white)">How are CPG companies using AI, <em style="color: var(--citrus)">and other questions</em></h2>
+        <div style="max-width: 900px; margin-top: var(--s6); border-top: 1px solid var(--rule-light)">
+          <div style="border-bottom: 1px solid var(--rule-light)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" data-faq="0" aria-controls="faq-panel-0" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--citrus); cursor: pointer">
+                  <span>How are CPG companies using AI?</span>
+                  <span data-chev style="flex: 0 0 auto; font-size: 14px; color: var(--citrus); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div data-faq-panel id="faq-panel-0" role="region" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4); color: var(--white)">Most CPG companies run AI in demand forecasting, trade promotion, consumer insight and marketing production. BCG and the Consumer Goods Forum found about 75% still in pilot or exploration mode in 2026, with 18% scaling impact. Adoption is broad and shallow across the sector. The category-level demand behind those use cases sits in the Tastewise platform.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule-light)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" data-faq="1" aria-controls="faq-panel-1" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--citrus); cursor: pointer">
+                  <span>What is AI for CPG?</span>
+                  <span data-chev style="flex: 0 0 auto; font-size: 14px; color: var(--citrus); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div data-faq-panel id="faq-panel-1" role="region" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4); color: var(--white)">AI for CPG is the use of machine learning, forecasting and generative models across consumer goods work. Artificial intelligence in CPG covers demand sensing, pricing and assortment. Product development, packaging and marketing sit in the same stack. The defining shift is that models now read unstructured inputs and act on them through agents.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule-light)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" data-faq="2" aria-controls="faq-panel-2" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--citrus); cursor: pointer">
+                  <span>What is the difference between AI and machine learning in CPG?</span>
+                  <span data-chev style="flex: 0 0 auto; font-size: 14px; color: var(--citrus); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div data-faq-panel id="faq-panel-2" role="region" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4); color: var(--white)">Machine learning is one technique within AI. It learns patterns from historical data to predict a next value, which suits forecasting and elasticity work. AI also covers optimization, rule systems and generative models that produce new text or images.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule-light)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" data-faq="3" aria-controls="faq-panel-3" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--citrus); cursor: pointer">
+                  <span>Which CPG functions adopt AI first?</span>
+                  <span data-chev style="flex: 0 0 auto; font-size: 14px; color: var(--citrus); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div data-faq-panel id="faq-panel-3" role="region" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4); color: var(--white)">BCG reports frontrunners focusing on demand forecasting, pricing and transport optimization first. Marketing shows the widest gap, with seven in ten CPG marketing leaders expecting speed gains from generative AI and 13% reporting full workflow integration. Deloitte adds that wide adoption stays under 36% in every function outside IT.</p>
+              </div>
+            </div>
+          
+            <div style="border-bottom: 1px solid var(--rule-light)">
+              <h3 style="font: 700 var(--t-h3)/1.3 var(--font)">
+                <button type="button" data-faq="4" aria-controls="faq-panel-4" aria-expanded="false" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: none; border: 0; padding: var(--s4) 0; text-align: left; font: 700 var(--t-h3)/1.35 var(--font); color: var(--citrus); cursor: pointer">
+                  <span>What blocks AI adoption in CPG?</span>
+                  <span data-chev style="flex: 0 0 auto; font-size: 14px; color: var(--citrus); transform: rotate(0deg); transition: transform 400ms ease">&#9660;</span>
+                </button>
+              </h3>
+              <div data-faq-panel id="faq-panel-4" role="region" style="overflow: hidden; max-height: 0px; opacity: 0; transition: max-height 400ms ease, opacity 400ms ease">
+                <p style="max-width: var(--prose); padding: 0 0 var(--s4); color: var(--white)">Data fragmentation, unmeasured return, scarce talent and unchanged workflows. More than half of CPG and retail companies do not formally measure AI ROI, according to BCG and the Consumer Goods Forum in 2026. Programs without a measured return rarely survive a second budget cycle.</p>
+              </div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="background: var(--deep); color: var(--white); padding: var(--s7) var(--s3) var(--s4); overflow: hidden">
+    <div style="max-width: var(--wide); margin: 0 auto">
+      <div data-grid="foot">
+        <div>
+          <div style="font: 700 clamp(52px, 10vw, 128px)/0.92 var(--font); letter-spacing: -4px; color: var(--citrus); opacity: 0.22">AI for CPG</div>
+        </div>
+        <div data-grid="footlinks">
+          <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <span style="font: 600 11px/1.4 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--citrus)">On this page</span>
+            <a href="#where-it-works" style="color: var(--white); font-size: 15px">Where AI works today</a>
+            <a href="#adoption" style="color: var(--white); font-size: 15px">Adoption and returns</a>
+            <a href="#barriers" style="color: var(--white); font-size: 15px">What stalls it</a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: var(--s2)">
+            <span style="font: 600 11px/1.4 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--citrus)">About</span>
+            <a href="#what-it-is" style="color: var(--white); font-size: 15px">What AI for CPG covers</a>
+            <a href="#live-data" style="color: var(--white); font-size: 15px">Live demand signals</a>
+            <a href="#faq" style="color: var(--white); font-size: 15px">Questions</a>
+          </div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid var(--rule-light); margin-top: var(--s6); padding-top: var(--s3); display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: space-between; font: 500 var(--t-small)/1.5 var(--font); letter-spacing: 0.04em; color: rgba(255,255,255,0.7)">
+        <span>AI for CPG is published by Tastewise, a food and beverage AI platform.</span>
+        <span>Last updated September 4, 2026</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Mobile navigation ----------------------------------------------------- */
+  var menu = document.getElementById("site-menu");
+  var openers = document.querySelectorAll("[data-menu-toggle]");
+  function setMenu(open) {
+    menu.hidden = !open;
+    for (var i = 0; i < openers.length; i++) {
+      if (openers[i].hasAttribute("aria-expanded")) {
+        openers[i].setAttribute("aria-expanded", open ? "true" : "false");
+      }
+    }
+  }
+  for (var i = 0; i < openers.length; i++) {
+    openers[i].addEventListener("click", function () { setMenu(menu.hidden); });
+  }
+  var closers = document.querySelectorAll("[data-menu-close]");
+  for (var c = 0; c < closers.length; c++) {
+    closers[c].addEventListener("click", function () { setMenu(false); });
+  }
+
+  /* FAQ accordion, one panel open at a time -------------------------------- */
+  var faqButtons = [].slice.call(document.querySelectorAll("[data-faq]"));
+  var openIndex = -1;
+  function paintFaq() {
+    faqButtons.forEach(function (btn, i) {
+      var isOpen = openIndex === i;
+      var panel = document.getElementById("faq-panel-" + i);
+      var chev = btn.querySelector("[data-chev]");
+      btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      panel.style.maxHeight = isOpen ? "640px" : "0px";
+      panel.style.opacity = isOpen ? "1" : "0";
+      if (chev) chev.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
+    });
+  }
+  faqButtons.forEach(function (btn, i) {
+    btn.addEventListener("click", function () {
+      openIndex = openIndex === i ? -1 : i;
+      paintFaq();
+    });
+  });
+
+  /* Reveal on scroll ------------------------------------------------------- */
+  /* Progressive enhancement: [data-reveal] is added at runtime, so nothing is
+     hidden with JS off. Anything already in view is shown without animating. */
+  if (typeof IntersectionObserver === "undefined") return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  var targets = [].slice.call(document.querySelectorAll("h2, [data-stat-figure]"));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.setAttribute("data-shown", "1");
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  targets.forEach(function (t) {
+    var box = t.getBoundingClientRect();
+    t.setAttribute("data-reveal", "");
+    if (box.top < window.innerHeight && box.bottom > 0) {
+      t.setAttribute("data-shown", "1");
+      return;
+    }
+    io.observe(t);
+  });
+
+  /* Visibility must never depend on the observer firing: reveal everything
+     unconditionally after the animation window, so nothing can stay hidden. */
+  var revealTimer;
+  function revealAll() {
+    targets.forEach(function (t) { t.setAttribute("data-shown", "1"); });
+    io.disconnect();
+    window.removeEventListener("scroll", onFirstScroll);
+  }
+  function onFirstScroll() {
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(revealAll, 600);
+  }
+  window.addEventListener("scroll", onFirstScroll, { passive: true });
+  revealTimer = setTimeout(revealAll, 1200);
+})();
+</script>
+</body>
+</html>
